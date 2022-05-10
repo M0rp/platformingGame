@@ -34,7 +34,7 @@ var surfaces = [];
 function startGame() {
     gameArea.start();
 
-    player = new component(50, 100, "purple", 240, 220, 0, "object");
+    player = new component(50, 100, "assets/images/player/playerSprite.png", 240, 220, 0, "player");
     player.ySpeed = 0;
     leftCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obsticle");
     rightCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obsticle");
