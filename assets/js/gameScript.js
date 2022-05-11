@@ -38,7 +38,7 @@ var surfaces = [];
 function startGame() {
     gameArea.start();
 
-    player = new component(50, 100, "purple", 240, 220, 0, "temp");
+    player = new component(50, 100, "assets/images/player/idleAnimations/standingLeft.png", 240, 220, 0, "player");
     player.ySpeed = 0;
     leftCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obstacle");
     rightCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obstacle");
@@ -61,6 +61,8 @@ function component(width, height, color, x, y, angle, type) {
     this.x = x;
     this.y = y;
     this.angle = angle;
+    this.facing = "left";
+    this.state = "idle";
 
     this.speed = 0;
     this.ySpeed = 1;
@@ -76,6 +78,10 @@ function component(width, height, color, x, y, angle, type) {
     if(type == "collectables") {
         this.image = new Image();
         this.image.src = color;
+    }
+
+    this.setImage = function(imagePath) {
+        this.image.src = imagePath;
     }
 
     this.update = function() {
@@ -142,6 +148,18 @@ function component(width, height, color, x, y, angle, type) {
             }
         }
 
+        if(this.ySpeed != 0) {
+            player.state = "jumping";
+        }
+
+        if(player.state = "")
+
+        /*if(player.facing == "right") {
+            player.setImage("assets/images/player/idleAnimations/standingRight.png");
+        } else if(player.facing == "left") {
+            player.setImage("assets/images/player/idleAnimations/standingLeft.png");
+        }*/
+
         this.x += this.xSpeed;
         this.y += this.ySpeed;
     }
@@ -173,9 +191,11 @@ function updateGameArea() {
     player.xSpeed = 0;
     if(gameArea.keys && gameArea.keys[39]) {
         player.xSpeed = 10;
+        player.facing = "right";
     }
     if(gameArea.keys && gameArea.keys[37]) {
         player.xSpeed = -10;
+        player.facing = "left";
     }
     if(gameArea.keys && gameArea.keys[90] && (player.jumpCount == 0)) {
         player.ySpeed = -20;
