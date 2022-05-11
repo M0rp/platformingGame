@@ -8,6 +8,7 @@ var gameArea = {
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 
         this.gravity = 1.25;
+        this.playerTotal;
 
         this.interval = setInterval(updateGameArea, 20);
 
@@ -29,22 +30,28 @@ var player;
 var leftCollide, rightCollide;
 var topCollide, bottomCollide;
 
+var collectables = [];
+var score;
+
 var surfaces = [];
 
 function startGame() {
     gameArea.start();
 
-    player = new component(50, 100, "assets/images/player/playerSprite.png", 240, 220, 0, "player");
+    player = new component(50, 100, "purple", 240, 220, 0, "temp");
     player.ySpeed = 0;
-    leftCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obsticle");
-    rightCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obsticle");
-    topCollide = new component(50, 10, "rgba(0, 0, 0, 0)", 50, 50, 0, "obsticle");
-    bottomCollide = new component(50, 10, "rgba(0, 0, 0, 0)", 50, 50, 0, "obsticle");
+    leftCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obstacle");
+    rightCollide = new component(10, 75, "rgba(0, 0, 0, 0)", 50, 50, 0, "obstacle");
+    topCollide = new component(50, 10, "rgba(0, 0, 0, 0)", 50, 50, 0, "obstacle");
+    bottomCollide = new component(50, 10, "rgba(0, 0, 0, 0)", 50, 50, 0, "obstacle");
 
-    surfaces[0] = new component(1080, 50, "blue", 0, 670, 0, "obsticle");
-    surfaces[1] = new component(50, 150, "blue", 0, 520, 0, "obsticle");
-    surfaces[2] = new component(50, 150, "blue", 1030, 520, 0, "obsticle");
-    surfaces[3] = new component(300, 50, "blue", 390, 500, 0, "obsticle");
+    collectables[0] = new component(42, 66, "assets/images/collectables/strawberry.png", 540, 360, 0, "collectables");
+    score = new component("30px", "Consolas", "white", 540, 40, "text");
+
+    surfaces[0] = new component(1080, 50, "#655e5e", 0, 670, 0, "obstacle");
+    surfaces[1] = new component(50, 150, "#655e5e", 0, 520, 0, "obstacle");
+    surfaces[2] = new component(50, 150, "#655e5e", 1030, 520, 0, "obstacle");
+    surfaces[3] = new component(300, 50, "#655e5e", 390, 500, 0, "obstacle");
 }
 
 function component(width, height, color, x, y, angle, type) {
@@ -66,9 +73,13 @@ function component(width, height, color, x, y, angle, type) {
         this.image = new Image();
         this.image.src = color;
     }
+    if(type == "collectables") {
+        this.image = new Image();
+        this.image.src = color;
+    }
 
     this.update = function() {
-        if(type == "obsticle") {
+        if(type == "obstacle") {
             ctx = gameArea.context;
             ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -79,6 +90,12 @@ function component(width, height, color, x, y, angle, type) {
             ctx.rotate(this.angle);
             if(type == "player") {
                 ctx.drawImage(this.image, this.width / -2, this.height / -2, this.width, this.height);
+            } else if(type == "collectables") {
+                ctx.drawImage(this.image, this.width / -2, this.height / -2, this.width, this.height);
+            } else if(this.type == "text") {
+                ctx.font = this.width + " " + this.height;
+                ctx.fillStyle = color;
+                ctx.fillText(this.text, this.x, this.y); 
             } else {
                 ctx.fillStyle = color;
                 ctx.fillRect(this.width / -2, this.height / -2, this.width, this.height);
@@ -185,6 +202,26 @@ function updateGameArea() {
     bottomCollide.x = player.x -25;
     bottomCollide.y = player.y + 50;
     bottomCollide.update();
+
+    for(i=0; i < collectables.length; i++) {
+        if(collectables[i] != null) {
+            this.refresh = true;
+
+            if(player.collideWith(collectables[i])) {
+                this.refresh = false;
+                gameArea.playerTotal += 1;
+            }
+
+            if(this.refresh == true) {
+                collectables[i].update();
+            } else {
+                collectables[i] = 0;
+            }
+        }
+    }
+
+    score.text = "test";
+    score.update();
 
     for(i=0; i < surfaces.length; i++) {
         surfaces[i].update();
